@@ -14,7 +14,6 @@ namespace clustering
         // number of clusters
         public static int K { get; set; } = 8;
      
-        // 
         public static int MaxIterations { get; set; } = 10;
 
         // cluster index of each data point
@@ -26,6 +25,12 @@ namespace clustering
         // average RGB values of each cluster
         private static RGB[] Means;
 
+        // the aim of the algorithm is to separate the data into K clusters
+        // clusters are initially randomly assigned once the cluster
+        // centroids are determined, the algorithm reassigns the data points
+        // to new clusters
+        // the process ends when there are no more changes to the cluster
+        // assignment, or the max number of iterations has been reached
         public static string[] Cluster(RGB[] rgbData)
         {
             Clusters = new int[rgbData.Length];
@@ -124,7 +129,8 @@ namespace clustering
                         continue;
 
                     double d = Distance(rgbData[i], rgbData[CentroidIds[j]]); 
-                    
+
+                    // reassign if there is a closer centroid                    
                     if (d < closestDistance)
                     {
                         changed = true;
