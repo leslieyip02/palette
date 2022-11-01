@@ -1,51 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace clustering
+namespace Clustering
 {
-    public struct RGB
-    {
-        public double R, G, B;
-
-        public RGB(byte r, byte g, byte b)
-        {
-            R = r;
-            G = g;
-            B = b;
-        }
-
-        public void AddBy(RGB color)
-        {
-            R += color.R;
-            G += color.G;
-            B += color.B;
-        }
-        
-        public void DivideBy(int d)
-        {
-            if (d == 0)
-                d = 1;
-
-            R /= d;
-            G /= d;
-            B /= d;
-        }
-
-        public override string ToString()
-        {
-            string hex = "#";
-
-            hex += Convert.ToInt32(R).ToString("X").PadLeft(2, '0');
-            hex += Convert.ToInt32(G).ToString("X").PadLeft(2, '0');
-            hex += Convert.ToInt32(B).ToString("X").PadLeft(2, '0');
-
-            return hex;
-        }
-    }
-
     public class Program
     {
         const int BMP_HEADER_SIZE = 54;
@@ -78,11 +38,12 @@ namespace clustering
                 // color byte data is given in BGR order
                 rgbData[(i - 2) / 3] = new RGB(byteData[i],
                     byteData[i - 1], byteData[i - 2]);
+                // Console.WriteLine(rgbData[(i - 2) / 3]);
             }
 
-            KMeans.K = 8;
+            KMeans.K = 5;
 
-            string[] centroids = KMeans.Cluster(rgbData);
+            string[] centroids = KMeans.Cluster<RGB>(rgbData);
             Console.WriteLine(String.Join("   ", centroids));
         }
     }

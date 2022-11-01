@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace clustering
+namespace Clustering
 {
     // adapted from:
     // https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/february/data-clustering-detecting-abnormal-data-using-k-means-clustering
@@ -13,7 +13,9 @@ namespace clustering
     {
         // number of clusters
         public static int K { get; set; } = 8;
-     
+
+        // stop after a certain number of iterations
+        // since the result is probably good enough
         public static int MaxIterations { get; set; } = 10;
 
         // cluster index of each data point
@@ -22,40 +24,44 @@ namespace clustering
         // indices of the centroids
         private static int[] CentroidIds;
 
-        // average RGB values of each cluster
-        private static RGB[] Means;
-
         // the aim of the algorithm is to separate the data into K clusters
         // clusters are initially randomly assigned once the cluster
         // centroids are determined, the algorithm reassigns the data points
         // to new clusters
         // the process ends when there are no more changes to the cluster
         // assignment, or the max number of iterations has been reached
-        public static string[] Cluster(RGB[] rgbData)
+        public static string[] Cluster<T>(T[] data) where T : IColor, new()
         {
-            Clusters = new int[rgbData.Length];
-            Means = new RGB[K];
-            CentroidIds = new int[K];
-
-            RandomiseClusters(rgbData.Length);
+            Clusters = new int[data.Length];
+            RandomiseClusters(data.Length);
             
-            UpdateMeans(rgbData);
-            UpdateCentroids(rgbData);
+            // average values of each cluster
+            T[] means = new T[K];
+            for (int i = 0; i < K; i++)
+                means[i] = new T();
+            
+            CentroidIds = new int[K];
+            
+            UpdateMeans(data, ref means);
+            UpdateCentroids(data, means);
+            
+            // Console.WriteLine(String.Join(", ", Means));
+            // Console.WriteLine(String.Join(", ", CentroidIds));
 
             bool changed = true;
             int iterations = 0;
             while (changed && iterations < MaxIterations)
             {
-                changed = AssignClusters(rgbData);
-                UpdateMeans(rgbData);
-                UpdateCentroids(rgbData);
+                changed = AssignClusters(data);
+                UpdateMeans(data, ref means);
+                UpdateCentroids(data, means);
 
                 iterations++;
             }
 
             string[] centroids = new string[K];
             for (int i = 0; i < K; i++)
-                centroids[i] = rgbData[CentroidIds[i]].ToString();
+                centroids[i] = data[CentroidIds[i]].ToString();
 
             return centroids;
         }
@@ -69,38 +75,38 @@ namespace clustering
                 Clusters[i] = rnd.Next(K);
         }
 
-        // sum the RGB values of each cluster,
+        // sum the components of each point for each cluster,
         // and divide by the total number of values of the cluster
-        // to obtain the average RGB values of that cluster
-        private static void UpdateMeans(RGB[] rgbData)
+        // to obtain the average values of that cluster
+        private static void UpdateMeans<T>(T[] data, ref T[] means) where T : IColor
         {
-            for (int i = 0; i < Means.Length; i++)
-                Means[i].R = Means[i].G = Means[i].B = 0.0;
+            for (int i = 0; i < means.Length; i++)
+                means[i].Zero();
 
             int[] counts = new int[Clusters.Length];
             for (int i = 0; i < Clusters.Length; i++)
             {
                 int cluster = Clusters[i];
                 counts[cluster]++;
-                Means[cluster].AddBy(rgbData[i]);
+                means[cluster].AddBy(data[i]);
             }
 
-            for (int i = 0; i < Means.Length; i++)
-                Means[i].DivideBy(counts[i]);
+            for (int i = 0; i < means.Length; i++)
+                means[i].DivideBy(counts[i]);
         }
 
         // for each cluster, find the data point that is
         // closest to the average value of the cluster,
         // and assign it as the centroid
-        private static void UpdateCentroids(RGB[] rgbData)
+        private static void UpdateCentroids<T>(T[] data, T[] means) where T : IColor
         {
             double[] closestDistances = new double[K];
             Array.Fill(closestDistances, double.MaxValue);
 
-            for (int i = 0; i < rgbData.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 int cluster = Clusters[i];
-                double d = Distance(rgbData[i], Means[cluster]);
+                double d = data[i].DistanceTo(means[cluster]);
 
                 if (d < closestDistances[cluster])
                 {
@@ -113,22 +119,22 @@ namespace clustering
         // assign each data point to the cluster with the closest centroid
         // if no points change clusters in the current iteration,
         // the algorithm has converged and is complete
-        private static bool AssignClusters(RGB[] rgbData)
+        private static bool AssignClusters<T>(T[] data) where T : IColor
         {
             bool changed = false;
 
-            for (int i = 0; i < rgbData.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 int closestIndex = Clusters[i];
-                double closestDistance = Distance(rgbData[i],
-                    rgbData[CentroidIds[closestIndex]]);
+                double closestDistance = data[i]
+                    .DistanceTo(data[CentroidIds[closestIndex]]);
 
                 for (int j = 0; j < CentroidIds.Length; j++)
                 {
                     if (j == Clusters[i])
                         continue;
 
-                    double d = Distance(rgbData[i], rgbData[CentroidIds[j]]); 
+                    double d = data[i].DistanceTo(data[CentroidIds[j]]);
 
                     // reassign if there is a closer centroid                    
                     if (d < closestDistance)
@@ -143,14 +149,6 @@ namespace clustering
             }
 
             return changed;
-        }
-
-        // treat each RGB value as a 3D vector
-        // and find the eulicdean distance between them
-        private static double Distance(RGB v, RGB w)
-        {
-            return Math.Sqrt(Math.Pow(v.R - w.R, 2) +
-                Math.Pow(v.G - w.G, 2) + Math.Pow(v.B - w.B, 2));
         }
     }
 }
