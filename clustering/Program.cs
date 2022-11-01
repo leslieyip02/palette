@@ -21,30 +21,48 @@ namespace Clustering
 
         static void Main(string[] args)
         {
-            // Image img = Image.FromFile("..\\..\\..\\img\\city1.jpg");
-            // Image img = Image.FromFile("..\\..\\..\\img\\city2.jpg");
-            // Image img = Image.FromFile("..\\..\\..\\img\\scenery1.jpg");
-            // Image img = Image.FromFile("..\\..\\..\\img\\scenery2.jpg");
-            Image img = Image.FromFile("..\\..\\..\\img\\ui.png");
+            string[] imgNames = { "city1.jpg", "city2.jpg", 
+                "scenery1.jpg", "scenery2.jpg", "ui.png" };
 
-            byte[] byteData = ImageToByteArray(img)
-                .Skip(BMP_HEADER_SIZE)
-                .ToArray();
+            Console.WriteLine("Choose an image: ");
+            Console.WriteLine("- 1: city1");
+            Console.WriteLine("- 2: city2");
+            Console.WriteLine("- 3: scenery1");
+            Console.WriteLine("- 4: scenery2");
+            Console.WriteLine("- 5: ui");
 
-            RGB[] rgbData = new RGB[byteData.Length / 3];
-
-            for (int i = 2; i < byteData.Length; i += 3)
+            try
             {
-                // color byte data is given in BGR order
-                rgbData[(i - 2) / 3] = new RGB(byteData[i],
-                    byteData[i - 1], byteData[i - 2]);
-                // Console.WriteLine(rgbData[(i - 2) / 3]);
+                int n = Convert.ToInt32(Console.ReadLine());
+                string path = "..\\..\\..\\img\\" + imgNames[n - 1];
+
+                Image img = Image.FromFile(path);
+
+                byte[] byteData = ImageToByteArray(img)
+                    .Skip(BMP_HEADER_SIZE)
+                    .ToArray();
+
+                RGB[] rgbData = new RGB[byteData.Length / 3];
+
+                for (int i = 2; i < byteData.Length; i += 3)
+                {
+                    // color byte data is given in BGR order
+                    rgbData[(i - 2) / 3] = new RGB(byteData[i],
+                        byteData[i - 1], byteData[i - 2]);
+                    // Console.WriteLine(rgbData[(i - 2) / 3]);
+                }
+
+                KMeans.K = 5;
+
+                string[] centroids = KMeans.Cluster<RGB>(rgbData);
+                Console.WriteLine("Palette: " + 
+                    String.Join("   ", centroids));
             }
-
-            KMeans.K = 5;
-
-            string[] centroids = KMeans.Cluster<RGB>(rgbData);
-            Console.WriteLine(String.Join("   ", centroids));
+            catch (Exception e)
+            {
+                Console.WriteLine("Oops, something went wrong!");
+                Console.WriteLine(e);
+            }
         }
     }
 }
