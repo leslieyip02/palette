@@ -42,19 +42,33 @@ namespace Clustering
                     .Skip(BMP_HEADER_SIZE)
                     .ToArray();
 
-                RGB[] rgbData = new RGB[byteData.Length / 3];
+                // RGB[] rgbData = new RGB[byteData.Length / 3];
 
+                // for (int i = 2; i < byteData.Length; i += 3)
+                // {
+                //     // color byte data is given in BGR order
+                //     rgbData[(i - 2) / 3] = new RGB(byteData[i],
+                //         byteData[i - 1], byteData[i - 2]);
+                //     // Console.WriteLine(rgbData[(i - 2) / 3]);
+                // }
+
+                // KMeans.K = 5;
+
+                // string[] centroids = KMeans.Cluster<RGB>(rgbData);
+                // Console.WriteLine("Palette: " + 
+                //     String.Join("   ", centroids));
+
+                CMYK[] cmykData = new CMYK[byteData.Length / 3];
+                
                 for (int i = 2; i < byteData.Length; i += 3)
                 {
-                    // color byte data is given in BGR order
-                    rgbData[(i - 2) / 3] = new RGB(byteData[i],
+                    cmykData[(i - 2) / 3] = new CMYK(byteData[i],
                         byteData[i - 1], byteData[i - 2]);
-                    // Console.WriteLine(rgbData[(i - 2) / 3]);
                 }
 
                 KMeans.K = 5;
 
-                string[] centroids = KMeans.Cluster<RGB>(rgbData);
+                string[] centroids = KMeans.Cluster<CMYK>(cmykData);
                 Console.WriteLine("Palette: " + 
                     String.Join("   ", centroids));
             }
