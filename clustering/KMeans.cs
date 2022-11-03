@@ -30,7 +30,8 @@ namespace Clustering
         // to new clusters
         // the process ends when there are no more changes to the cluster
         // assignment, or the max number of iterations has been reached
-        public static string[] Cluster<T>(T[] data) where T : IColor, new()
+        public static string[] Cluster<T>(T[] data) 
+            where T : IColor, new()
         {
             Clusters = new int[data.Length];
             RandomiseClusters(data.Length);
@@ -78,7 +79,8 @@ namespace Clustering
         // sum the components of each point for each cluster,
         // and divide by the total number of values of the cluster
         // to obtain the average values of that cluster
-        private static void UpdateMeans<T>(T[] data, ref T[] means) where T : IColor
+        private static void UpdateMeans<T>(T[] data, ref T[] means) 
+            where T : IColor
         {
             for (int i = 0; i < means.Length; i++)
                 means[i].Zero();
@@ -98,7 +100,8 @@ namespace Clustering
         // for each cluster, find the data point that is
         // closest to the average value of the cluster,
         // and assign it as the centroid
-        private static void UpdateCentroids<T>(T[] data, T[] means) where T : IColor
+        private static void UpdateCentroids<T>(T[] data, T[] means)
+            where T : IColor
         {
             double[] closestDistances = new double[K];
             Array.Fill(closestDistances, double.MaxValue);
@@ -119,7 +122,8 @@ namespace Clustering
         // assign each data point to the cluster with the closest centroid
         // if no points change clusters in the current iteration,
         // the algorithm has converged and is complete
-        private static bool AssignClusters<T>(T[] data) where T : IColor
+        private static bool AssignClusters<T>(T[] data)
+            where T : IColor
         {
             bool changed = false;
 

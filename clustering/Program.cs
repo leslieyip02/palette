@@ -8,9 +8,9 @@ namespace Clustering
 {
     public class Program
     {
-        const int BMP_HEADER_SIZE = 54;
+        public const int BMP_HEADER_SIZE = 54;
 
-        static byte[] ImageToByteArray(Image img)
+        public static byte[] ImageToByteArray(Image img)
         {
             using (var stream = new MemoryStream())
             {
@@ -19,7 +19,15 @@ namespace Clustering
             }
         }
 
-        static void Main(string[] args)
+        public static void CreatePalette<T>(T[] data) 
+            where T : IColor, new()
+        {
+            string[] centroids = KMeans.Cluster<T>(data);
+            Console.WriteLine("Palette: " + 
+                String.Join("   ", centroids));
+        }
+
+        public static void Main(string[] args)
         {
             string[] imgNames = { "city1.jpg", "city2.jpg", 
                 "scenery1.jpg", "scenery2.jpg", "ui.png" };
@@ -31,72 +39,65 @@ namespace Clustering
             Console.WriteLine("- 4: scenery2");
             Console.WriteLine("- 5: ui");
 
-            try
+            int n = Convert.ToInt32(Console.ReadLine());
+            string path = "..\\..\\..\\img\\" + imgNames[n - 1];
+            Image img = Image.FromFile(path);
+            byte[] byteData = ImageToByteArray(img)
+                .Skip(BMP_HEADER_SIZE)
+                .ToArray();
+
+            Console.WriteLine("Choose a format: ");
+            Console.WriteLine("- 1: RGB");
+            Console.WriteLine("- 2: CMYK");
+            Console.WriteLine("- 3: HSL");
+            Console.WriteLine("- 4: HSV");
+
+            int m = Convert.ToInt32(Console.ReadLine());
+            switch (m)
             {
-                int n = Convert.ToInt32(Console.ReadLine());
-                string path = "..\\..\\..\\img\\" + imgNames[n - 1];
+                case 1:
+                    RGB[] RGBData = new RGB[byteData.Length / 3];
 
-                Image img = Image.FromFile(path);
+                    // color byte data is given in BGR order
+                    for (int i = 2; i < byteData.Length; i += 3)
+                        RGBData[(i - 2) / 3] = new RGB(byteData[i],
+                            byteData[i - 1], byteData[i - 2]);
 
-                byte[] byteData = ImageToByteArray(img)
-                    .Skip(BMP_HEADER_SIZE)
-                    .ToArray();
+                    CreatePalette<RGB>(RGBData);
+                    break;
 
-                // RGB[] rgbData = new RGB[byteData.Length / 3];
+                case 2:
+                    CMYK[] CMYKData = new CMYK[byteData.Length / 3];
 
-                // for (int i = 2; i < byteData.Length; i += 3)
-                // {
-                //     // color byte data is given in BGR order
-                //     rgbData[(i - 2) / 3] = new RGB(byteData[i],
-                //         byteData[i - 1], byteData[i - 2]);
-                //     // Console.WriteLine(rgbData[(i - 2) / 3]);
-                // }
+                    for (int i = 2; i < byteData.Length; i += 3)
+                        CMYKData[(i - 2) / 3] = new CMYK(byteData[i],
+                            byteData[i - 1], byteData[i - 2]);
 
-                // string[] centroids = KMeans.Cluster<RGB>(rgbData);
-                // Console.WriteLine("Palette: " + 
-                //     String.Join("   ", centroids));
+                    CreatePalette<CMYK>(CMYKData);
+                    break;
 
-                // CMYK[] cmykData = new CMYK[byteData.Length / 3];
-                
-                // for (int i = 2; i < byteData.Length; i += 3)
-                // {
-                //     cmykData[(i - 2) / 3] = new CMYK(byteData[i],
-                //         byteData[i - 1], byteData[i - 2]);
-                // }
+                case 3:
+                    HSL[] HSLData = new HSL[byteData.Length / 3];
 
-                // string[] centroids = KMeans.Cluster<CMYK>(cmykData);
-                // Console.WriteLine("Palette: " + 
-                //     String.Join("   ", centroids));
+                    for (int i = 2; i < byteData.Length; i += 3)
+                        HSLData[(i - 2) / 3] = new HSL(byteData[i],
+                            byteData[i - 1], byteData[i - 2]);
 
-                // HSL[] hslData = new HSL[byteData.Length / 3];
-                
-                // for (int i = 2; i < byteData.Length; i += 3)
-                // {
-                //     hslData[(i - 2) / 3] = new HSL(byteData[i],
-                //         byteData[i - 1], byteData[i - 2]);
-                // }
+                    CreatePalette<HSL>(HSLData);
+                    break;
 
-                // string[] centroids = KMeans.Cluster<HSL>(hslData);
-                // Console.WriteLine("Palette: " + 
-                //     String.Join("   ", centroids));
+                case 4:
+                    HSV[] HSVData = new HSV[byteData.Length / 3];
 
-                HSV[] hsvData = new HSV[byteData.Length / 3];
-                
-                for (int i = 2; i < byteData.Length; i += 3)
-                {
-                    hsvData[(i - 2) / 3] = new HSV(byteData[i],
-                        byteData[i - 1], byteData[i - 2]);
-                }
+                    for (int i = 2; i < byteData.Length; i += 3)
+                        HSVData[(i - 2) / 3] = new HSV(byteData[i],
+                            byteData[i - 1], byteData[i - 2]);
 
-                string[] centroids = KMeans.Cluster<HSV>(hsvData);
-                Console.WriteLine("Palette: " + 
-                    String.Join("   ", centroids));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Oops, something went wrong!");
-                Console.WriteLine(e);
-                throw e;
+                    CreatePalette<HSV>(HSVData);
+                    break;
+
+                default:
+                    throw new Exception("Image could not be formatted properly.");
             }
         }
     }
