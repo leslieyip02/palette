@@ -52,23 +52,31 @@ namespace Clustering
                 //     // Console.WriteLine(rgbData[(i - 2) / 3]);
                 // }
 
-                // KMeans.K = 5;
-
                 // string[] centroids = KMeans.Cluster<RGB>(rgbData);
                 // Console.WriteLine("Palette: " + 
                 //     String.Join("   ", centroids));
 
-                CMYK[] cmykData = new CMYK[byteData.Length / 3];
+                // CMYK[] cmykData = new CMYK[byteData.Length / 3];
+                
+                // for (int i = 2; i < byteData.Length; i += 3)
+                // {
+                //     cmykData[(i - 2) / 3] = new CMYK(byteData[i],
+                //         byteData[i - 1], byteData[i - 2]);
+                // }
+
+                // string[] centroids = KMeans.Cluster<CMYK>(cmykData);
+                // Console.WriteLine("Palette: " + 
+                //     String.Join("   ", centroids));
+
+                HSL[] hslData = new HSL[byteData.Length / 3];
                 
                 for (int i = 2; i < byteData.Length; i += 3)
                 {
-                    cmykData[(i - 2) / 3] = new CMYK(byteData[i],
+                    hslData[(i - 2) / 3] = new HSL(byteData[i],
                         byteData[i - 1], byteData[i - 2]);
                 }
 
-                KMeans.K = 5;
-
-                string[] centroids = KMeans.Cluster<CMYK>(cmykData);
+                string[] centroids = KMeans.Cluster<HSL>(hslData);
                 Console.WriteLine("Palette: " + 
                     String.Join("   ", centroids));
             }
@@ -76,6 +84,7 @@ namespace Clustering
             {
                 Console.WriteLine("Oops, something went wrong!");
                 Console.WriteLine(e);
+                throw e;
             }
         }
     }
