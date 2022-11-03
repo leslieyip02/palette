@@ -68,15 +68,27 @@ namespace Clustering
                 // Console.WriteLine("Palette: " + 
                 //     String.Join("   ", centroids));
 
-                HSL[] hslData = new HSL[byteData.Length / 3];
+                // HSL[] hslData = new HSL[byteData.Length / 3];
+                
+                // for (int i = 2; i < byteData.Length; i += 3)
+                // {
+                //     hslData[(i - 2) / 3] = new HSL(byteData[i],
+                //         byteData[i - 1], byteData[i - 2]);
+                // }
+
+                // string[] centroids = KMeans.Cluster<HSL>(hslData);
+                // Console.WriteLine("Palette: " + 
+                //     String.Join("   ", centroids));
+
+                HSV[] hsvData = new HSV[byteData.Length / 3];
                 
                 for (int i = 2; i < byteData.Length; i += 3)
                 {
-                    hslData[(i - 2) / 3] = new HSL(byteData[i],
+                    hsvData[(i - 2) / 3] = new HSV(byteData[i],
                         byteData[i - 1], byteData[i - 2]);
                 }
 
-                string[] centroids = KMeans.Cluster<HSL>(hslData);
+                string[] centroids = KMeans.Cluster<HSV>(hsvData);
                 Console.WriteLine("Palette: " + 
                     String.Join("   ", centroids));
             }
