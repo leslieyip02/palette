@@ -32,15 +32,21 @@ namespace Clustering
 
         public static void Main(string[] args)
         {
-            string[] imgNames = { "city1.jpg", "city2.jpg", 
-                "scenery1.jpg", "scenery2.jpg", "ui.png" };
+            string[] imgNames = { "city.jpg", "city2.jpg", "desert.png",
+                "mountains1.jpg", "mountains2.jpg", "ocean.jpg",
+                "scenery1.jpg", "scenery2.jpg", "ui.png", "winter.jpg" };
 
             Console.WriteLine("Choose an image: ");
-            Console.WriteLine("- 1: city1");
-            Console.WriteLine("- 2: city2");
-            Console.WriteLine("- 3: scenery1");
-            Console.WriteLine("- 4: scenery2");
-            Console.WriteLine("- 5: ui");
+            Console.WriteLine("- 1 : city1");
+            Console.WriteLine("- 2 : city2");
+            Console.WriteLine("- 3 : desert");
+            Console.WriteLine("- 4 : mountains1");
+            Console.WriteLine("- 5 : mountains2");
+            Console.WriteLine("- 6 : ocean");
+            Console.WriteLine("- 7 : scenery1");
+            Console.WriteLine("- 8 : scenery2");
+            Console.WriteLine("- 9 : ui");
+            Console.WriteLine("- 10: winter");
 
             int n = Convert.ToInt32(Console.ReadLine());
             string path = "..\\..\\..\\img\\" + imgNames[n - 1];
@@ -64,7 +70,7 @@ namespace Clustering
                     RGB[] RGBData = new RGB[byteData.Length / 3];
 
                     // color byte data is given in BGR order
-                    for (int i = 2; i < byteData.Length; i++)
+                    for (int i = 2; i < byteData.Length; i += 3)
                         RGBData[(i - 2) / 3] = new RGB(byteData[i],
                             byteData[i - 1], byteData[i - 2]);
 
@@ -74,7 +80,7 @@ namespace Clustering
                 case 2:
                     CMYK[] CMYKData = new CMYK[byteData.Length / 3];
 
-                    for (int i = 2; i < byteData.Length; i++)
+                    for (int i = 2; i < byteData.Length; i += 3)
                         CMYKData[(i - 2) / 3] = new CMYK(byteData[i],
                             byteData[i - 1], byteData[i - 2]);
 
