@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Clustering
 {
@@ -72,8 +73,9 @@ namespace Clustering
         {
             Random rnd = new Random();
 
-            for (int i = 0; i < Clusters.Length; i++)
+            Parallel.For(0, Clusters.Length, i => {
                 Clusters[i] = rnd.Next(K);
+            });
         }
 
         // sum the components of each point for each cluster,
@@ -106,8 +108,7 @@ namespace Clustering
             double[] closestDistances = new double[K];
             Array.Fill(closestDistances, double.MaxValue);
 
-            for (int i = 0; i < data.Length; i++)
-            {
+            Parallel.For(0, data.Length, i => {
                 int cluster = Clusters[i];
                 double d = data[i].DistanceTo(means[cluster]);
 
@@ -116,7 +117,7 @@ namespace Clustering
                     closestDistances[cluster] = d;
                     CentroidIds[cluster] = i;
                 }
-            }
+            });
         }
 
         // assign each data point to the cluster with the closest centroid
@@ -127,8 +128,7 @@ namespace Clustering
         {
             bool changed = false;
 
-            for (int i = 0; i < data.Length; i++)
-            {
+            Parallel.For(0, data.Length, i => {
                 int closestIndex = Clusters[i];
                 double closestDistance = data[i]
                     .DistanceTo(data[CentroidIds[closestIndex]]);
@@ -150,7 +150,7 @@ namespace Clustering
                 }
 
                 Clusters[i] = closestIndex;
-            }
+            });
 
             return changed;
         }
