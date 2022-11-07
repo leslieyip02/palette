@@ -1,0 +1,75 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+@* <h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" /> *@
+
+<InputFile OnChange="@OnChange"  />
+
+@if (imgSrc == null)
+{
+    <p><em>Loading image...</em></p>
+}
+else
+{
+    <img src="@imgSrc" />
+}
+
+@if (colors == null)
+{
+    <p><em>Loading colors...</em></p>
+}
+else
+{
+    @foreach (string color in colors)
+    {
+        <ColorPane Color=@color />
+    }
+}
+
+@* <label for="colorFormat">Choose a format:</label>
+
+<select name="colorFormat" id="colorFormat">
+    <option value="RGB">RGB</option>
+    <option value="CMYK">CMYK</option>
+    <option value="HSL">HSL</option>
+    <option value="HSV">HSV</option>
+</select> *@
+
+@code {
+    private string[]? colors;
+
+    private string? imgSrc;
+
+    async Task OnChange(InputFileChangeEventArgs e)
+    {
+        string ErrorMessage = string.Empty;
+        
+        var bmpFile = await e.File
+            .RequestImageFileAsync("image/bmp", 640, 640);
+
+        using var input = bmpFile.OpenReadStream(3200000);
+        using var ms = new MemoryStream();
+        await input.CopyToAsync(ms);
+
+        byte[] byteData = ms.ToArray()
+            .Skip(54)
+            .ToArray();
+
+        RGB[] RGBData = new RGB[byteData.Length / 3];
+
+        for (int i = 2; i < byteData.Length; i += 3)
+            RGBData[(i - 2) / 3] = new RGB(byteData[i],
+                byteData[i - 1], byteData[i - 2]);
+
+        imgSrc = ($"data:{e.File.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}");
+        Console.WriteLine(e.File.ContentType);
+        Console.WriteLine(e.File.Size);
+
+        colors = KMeans.Cluster<RGB>(RGBData);
+    }
+}
