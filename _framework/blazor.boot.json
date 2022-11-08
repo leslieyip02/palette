@@ -7,7 +7,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "Microsoft.AspNetCore.Components.dll": "sha256-RB0oTnM4yyocBUjOaQ\/1spWLDOUVwUc0mL64KQxgDsw=",
+      "Microsoft.AspNetCore.Components.dll": "sha256-jekfA6W2URltRiL2jNvCSAmwIJOqBWrouufbgplvfow=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-xjRvYLZIkfBRJ8KgF\/paMtU5DYj3qpb1bH7dGEutpcs=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-NkDE+tdSWp050qapYyhy1p\/V7azi+eYPshFTatPjcF4=",
       "Microsoft.Extensions.Configuration.Abstractions.dll": "sha256-zhFtW4kE16TdrpPne9I1Cu9o0KYzrS50VE9MVSifJg4=",
@@ -21,7 +21,7 @@
       "Microsoft.Extensions.Primitives.dll": "sha256-YColTWA58whC+8aBjv1O7HgsyYrbHTba601EkNDWAlo=",
       "Microsoft.JSInterop.dll": "sha256-XcaDEhkHtxwlGal7hITgFnVNT3Ro1zESgtRmYA0Q9eM=",
       "Microsoft.JSInterop.WebAssembly.dll": "sha256-0saVdC+sMMfIFQiPE38fUf4BukqpLPVVqyuLYLCorTs=",
-      "Palette.dll": "sha256-xjcLnT+OLkfQK3zT06m278WKHQ3M3Ud6bCypDNnU\/0o=",
+      "Palette.dll": "sha256-HdBKikdlzOK6Oh3jPnLgOv1YoWjfo6e4KGMJOejAWiY=",
       "System.Collections.Concurrent.dll": "sha256-UVY\/ij6intX\/l+48Yh7NcBKMld7ZvxW2q1Rhkt1QeMI=",
       "System.Collections.dll": "sha256-fYRbiRbB3bLxFUagOxpAo7I0eAYpotHTycO9sCc65qQ=",
       "System.ComponentModel.dll": "sha256-Qssp+YWlAZw03rhXDz8auxAqI87BtJ00YYYkOj9jbSw=",
@@ -31,7 +31,7 @@
       "System.Net.Http.dll": "sha256-utMLkRMzgqku9LKMsIH7v6QTBlFIzMVLVDhMTZP\/rfU=",
       "System.Net.Http.Json.dll": "sha256-\/HKg18ikPTcqfpJF7iddew424uR8NGEEVei2apXr8Es=",
       "System.Net.Primitives.dll": "sha256-zr\/H1koT0iVU2B5uyLa3HFXjPjGAODt6alCqWpWrXo0=",
-      "System.Private.CoreLib.dll": "sha256-\/S6Pu8cgZ\/9q0kFV6gxtyjaBQZ69neUGVWPZViRZuqQ=",
+      "System.Private.CoreLib.dll": "sha256-1lES8HKQb\/Q8KEb7UY0MnxNlNMM+Gi5Ov+FV6aemL74=",
       "System.Private.Runtime.InteropServices.JavaScript.dll": "sha256-mZidmziKZLGNbVLNQ3twD6mDOG4XNybBnBUy9aauxG0=",
       "System.Private.Uri.dll": "sha256-MYoq5F7PkRx3JzSAQdlwu+xisLifIXfd4Q9wN3DtVvI=",
       "System.Runtime.CompilerServices.Unsafe.dll": "sha256-5IU6GUX8qOctLAYHuQ7clOc3ohNJ6aky7koryZ5i6W8=",
