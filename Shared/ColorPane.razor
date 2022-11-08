@@ -1,8 +1,25 @@
-<div>
-    <h2 style="background-color:@Color;">@Color</h2>
+<div style="background-color:@Color;">
+    <h2>@Color</h2>
+
+    @for (int i = 0; i < 3; i++)
+    {
+        int j = i;
+        <input type="range" min="0" max="255" 
+            value="@RGBColor.Values[j]"
+            @oninput="@(e => OnInput(e, j))" />
+    }
 </div>
 
 @code {
-    [Parameter]
+    [Parameter] 
     public string Color { get; set; } = "#FFFFFF";
+
+    [Parameter] 
+    public RGB RGBColor { get; set; } = new RGB(255, 255, 255);
+
+    private void OnInput(ChangeEventArgs e, int i)
+    {
+        RGBColor.Values[i] = Convert.ToDouble(e.Value);
+        Color = RGBColor.ToString();
+    }
 }

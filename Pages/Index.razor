@@ -8,6 +8,8 @@ Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" /> *@
 
+<ColorPane />
+
 <InputFile OnChange="@OnChange"  />
 
 @if (imgSrc == null)
@@ -27,7 +29,8 @@ else
 {
     @foreach (string color in colors)
     {
-        <ColorPane Color=@color />
+        <ColorPane Color=@color 
+            RGBColor=@HexToRGB(color)/>
     }
 }
 
@@ -45,7 +48,16 @@ else
 
     private string? imgSrc;
 
-    async Task OnChange(InputFileChangeEventArgs e)
+    private RGB HexToRGB(string color)
+    {
+        byte r = Convert.ToByte(color.Substring(1, 2), 16);
+        byte g = Convert.ToByte(color.Substring(3, 2), 16);
+        byte b = Convert.ToByte(color.Substring(5, 2), 16);
+
+        return new RGB(r, g, b);
+    }
+
+    private async Task OnChange(InputFileChangeEventArgs e)
     {
         string ErrorMessage = string.Empty;
         
