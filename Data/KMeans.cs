@@ -17,10 +17,10 @@ namespace Palette
         public static int MaxIterations { get; set; } = 5;
 
         // cluster index of each data point
-        private static int[] Clusters;
+        private static int[] Clusters = {};
         
         // indices of the centroids
-        private static int[] CentroidIds;
+        private static int[] CentroidIds = {};
 
         // the aim of the algorithm is to separate the data into K clusters
         // clusters are initially randomly assigned once the cluster

@@ -16,7 +16,7 @@ namespace Palette
         public void AddBy(IColor other);
         public void DivideBy(int n);
 
-        // euclidean distance between points
+        // squared euclidean distance between points
         public double DistanceTo(IColor other);
 
         // convert to hex color 
