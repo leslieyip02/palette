@@ -6,8 +6,10 @@
         int j = i;
         <input type="range" min="0" max="255" 
             value="@RGBColor.Values[j]"
-            @oninput="@(e => OnInput(e, j))" />
+            @oninput="@(e => OnSliderChange(e, j))" />
     }
+
+    <button onclick="@Discard"></button>
 </div>
 
 @code {
@@ -17,9 +19,15 @@
     [Parameter] 
     public RGB RGBColor { get; set; } = new RGB(255, 255, 255);
 
-    private void OnInput(ChangeEventArgs e, int i)
+    [Parameter]
+    public Action<string> RemoveColorPane { get; set; }
+
+    private void OnSliderChange(ChangeEventArgs e, int i)
     {
         RGBColor.Values[i] = Convert.ToDouble(e.Value);
         Color = RGBColor.ToString();
     }
+
+    private void Discard() =>
+        RemoveColorPane?.Invoke(Color);
 }

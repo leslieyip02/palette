@@ -2,51 +2,48 @@
 
 <PageTitle>Index</PageTitle>
 
-@* <h1>Hello, world!</h1>
+@* <ColorPane /> *@
 
-Welcome to your new app.
+<InputFile OnChange="@CreatePalette" />
 
-<SurveyPrompt Title="How is Blazor working for you?" /> *@
-
-<ColorPane />
-
-<InputFile OnChange="@OnChange"  />
-
-@if (imgSrc == null)
+@if (ImgSrc == null)
 {
     <p><em>Loading image...</em></p>
 }
 else
 {
-    <img src="@imgSrc" />
+    <img src="@ImgSrc" />
 }
 
-@if (colors == null)
+@if (Colors == null)
 {
     <p><em>Loading colors...</em></p>
 }
 else
 {
-    @foreach (string color in colors)
+    @foreach (string color in Colors)
     {
-        <ColorPane Color=@color 
-            RGBColor=@HexToRGB(color)/>
+        <ColorPane Color=@color RGBColor=@HexToRGB(color)
+            RemoveColorPane="@RemoveColorPane" />
     }
 }
 
-@* <label for="colorFormat">Choose a format:</label>
-
-<select name="colorFormat" id="colorFormat">
-    <option value="RGB">RGB</option>
+<label for="colorFormat">Choose a Format:</label>
+<select @bind="@Format">
+    <option value="RGB" selected>RGB</option>
     <option value="CMYK">CMYK</option>
     <option value="HSL">HSL</option>
     <option value="HSV">HSV</option>
-</select> *@
+</select>
 
 @code {
-    private string[]? colors;
+    private List<string>? Colors;
 
-    private string? imgSrc;
+    private string? ImgSrc;
+    
+    private string Format = "RGB";
+
+    private int NumClusters = 8;
 
     private RGB HexToRGB(string color)
     {
@@ -57,19 +54,21 @@ else
         return new RGB(r, g, b);
     }
 
-    private async Task OnChange(InputFileChangeEventArgs e)
+    private async Task CreatePalette(InputFileChangeEventArgs e)
     {
-        string ErrorMessage = string.Empty;
+        int bmpHeaderSize = 54;
+        int maxWidth = 640;
+        int maxFileSize = 3200000;
         
         var bmpFile = await e.File
-            .RequestImageFileAsync("image/bmp", 640, 640);
+            .RequestImageFileAsync("image/bmp", maxWidth, maxWidth);
 
-        using var input = bmpFile.OpenReadStream(3200000);
+        using var input = bmpFile.OpenReadStream(maxFileSize);
         using var ms = new MemoryStream();
         await input.CopyToAsync(ms);
 
         byte[] byteData = ms.ToArray()
-            .Skip(54)
+            .Skip(bmpHeaderSize)
             .ToArray();
 
         RGB[] RGBData = new RGB[byteData.Length / 3];
@@ -78,10 +77,17 @@ else
             RGBData[(i - 2) / 3] = new RGB(byteData[i],
                 byteData[i - 1], byteData[i - 2]);
 
-        imgSrc = ($"data:{e.File.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}");
+        ImgSrc = ($"data:{e.File.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}");
         Console.WriteLine(e.File.ContentType);
         Console.WriteLine(e.File.Size);
 
-        colors = KMeans.Cluster<RGB>(RGBData);
+        Colors = KMeans.Cluster<RGB>(RGBData)
+            .ToList();
+    }
+
+    public void RemoveColorPane(string color)
+    {
+        Colors?.Remove(color);
+        StateHasChanged();
     }
 }
