@@ -13,6 +13,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
+
     [Parameter] 
     public string Color { get; set; } = "#FFFFFF";
 
@@ -20,14 +23,21 @@
     public RGB RGBColor { get; set; } = new RGB(255, 255, 255);
 
     [Parameter]
-    public Action<string> RemoveColorPane { get; set; }
+    public Action<int, string> UpdateColorPane { get; set; }
+    
+    [Parameter]
+    public Action<int> RemoveColorPane { get; set; }
 
     private void OnSliderChange(ChangeEventArgs e, int i)
     {
         RGBColor.Values[i] = Convert.ToDouble(e.Value);
         Color = RGBColor.ToString();
+
+        UpdateColorPane?.Invoke(Id, Color);
     }
 
-    private void Discard() =>
-        RemoveColorPane?.Invoke(Color);
+    private void Discard()
+    {
+        RemoveColorPane?.Invoke(Id);
+    }
 }

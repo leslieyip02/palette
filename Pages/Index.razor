@@ -2,42 +2,51 @@
 
 <PageTitle>Index</PageTitle>
 
-@* <ColorPane /> *@
+<InputFile accept="image/*" OnChange="@CreatePalette" />
 
-<InputFile OnChange="@CreatePalette" />
+<div>
+    <ToolBar />
 
-@if (ImgSrc == null)
-{
-    <p><em>Loading image...</em></p>
-}
-else
-{
-    <img src="@ImgSrc" />
-}
-
-@if (Colors == null)
-{
-    <p><em>Loading colors...</em></p>
-}
-else
-{
-    @foreach (string color in Colors)
+    @if (ImgSrc != null)
     {
-        <ColorPane Color=@color RGBColor=@HexToRGB(color)
-            RemoveColorPane="@RemoveColorPane" />
+        <img src="@ImgSrc" />
     }
-}
 
-<label for="colorFormat">Choose a Format:</label>
-<select @bind="@Format">
-    <option value="RGB" selected>RGB</option>
-    <option value="CMYK">CMYK</option>
-    <option value="HSL">HSL</option>
-    <option value="HSV">HSV</option>
-</select>
+    @if (Colors == null)
+    {
+        @* <p><em>Loading colors...</em></p> *@
+        @for (int i = 0; i < 5; i++)
+        {
+            int j = i;
+            <ColorPane Id=@j UpdateColorPane="@UpdateColorPane"
+                RemoveColorPane="@RemoveColorPane" />
+        }
+    }
+    else
+    {
+        @for (int i = 0; i < Colors.Count; i++)
+        {
+            int j = i;
+            <ColorPane Id=@j Color=@Colors[j] RGBColor=@HexToRGB(Colors[j])
+                UpdateColorPane="@UpdateColorPane"
+                RemoveColorPane="@RemoveColorPane" />
+        }
+    }
+
+    @* <label for="colorFormat">Choose a Format:</label>
+    <select @bind="@Format">
+        <option value="RGB" selected>RGB</option>
+        <option value="CMYK">CMYK</option>
+        <option value="HSL">HSL</option>
+        <option value="HSV">HSV</option>
+    </select> *@
+</div>
+
 
 @code {
-    private List<string>? Colors;
+    private List<string> Colors = Enumerable
+        .Repeat("#FFFFFF", 5)
+        .ToList();
 
     private string? ImgSrc;
     
@@ -85,9 +94,14 @@ else
             .ToList();
     }
 
-    public void RemoveColorPane(string color)
+    public void UpdateColorPane(int id, string color)
     {
-        Colors?.Remove(color);
+        Colors[id] = color;
+    }
+
+    public void RemoveColorPane(int id)
+    {
+        Colors?.RemoveAt(id);
         StateHasChanged();
     }
 }
