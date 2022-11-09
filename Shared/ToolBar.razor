@@ -1,0 +1,39 @@
+<div class="fixed-top @ToggledClasses()">
+    <span class="oi oi-align-left" onclick="@ToggleCollapse"></span>
+
+    @if (!IsCollapsed)
+    {
+        <InputFile accept="image/*" OnChange="@UploadImage" />
+        <button onclick="@CreatePalette"></button>
+
+        
+        @* <label for="colorFormat">Choose a Format:</label>
+        <select @bind="@Format">
+            <option value="RGB" selected>RGB</option>
+            <option value="CMYK">CMYK</option>
+            <option value="HSL">HSL</option>
+            <option value="HSV">HSV</option>
+        </select> *@
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Action<InputFileChangeEventArgs> UploadImage { get; set; }
+
+    [Parameter]
+    public Action CreatePalette { get; set; }
+
+    private bool IsCollapsed = true;
+
+    private void ToggleCollapse()
+    {
+        IsCollapsed = !IsCollapsed;
+    }
+
+    private string ToggledClasses()
+    {
+        return IsCollapsed ? "" :
+            "w-25 vh-100 bg-primary";
+    }
+}

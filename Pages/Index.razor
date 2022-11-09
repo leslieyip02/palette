@@ -2,28 +2,16 @@
 
 <PageTitle>Index</PageTitle>
 
-<InputFile accept="image/*" OnChange="@CreatePalette" />
+<ToolBar UploadImage="@UploadImage" 
+    CreatePalette="@CreatePalette" />
 
-<div>
-    <ToolBar />
+@* @if (ImgSrc != null)
+{
+    <img src="@ImgSrc" />
+} *@
 
-    @if (ImgSrc != null)
-    {
-        <img src="@ImgSrc" />
-    }
-
-    @if (Colors == null)
-    {
-        @* <p><em>Loading colors...</em></p> *@
-        @for (int i = 0; i < 5; i++)
-        {
-            int j = i;
-            <ColorPane Id=@j UpdateColorPane="@UpdateColorPane"
-                RemoveColorPane="@RemoveColorPane" />
-        }
-    }
-    else
-    {
+<div class="container-fluid vh-100">
+    <div class="row">
         @for (int i = 0; i < Colors.Count; i++)
         {
             int j = i;
@@ -31,15 +19,7 @@
                 UpdateColorPane="@UpdateColorPane"
                 RemoveColorPane="@RemoveColorPane" />
         }
-    }
-
-    @* <label for="colorFormat">Choose a Format:</label>
-    <select @bind="@Format">
-        <option value="RGB" selected>RGB</option>
-        <option value="CMYK">CMYK</option>
-        <option value="HSL">HSL</option>
-        <option value="HSV">HSV</option>
-    </select> *@
+    </div>
 </div>
 
 
@@ -54,6 +34,8 @@
 
     private int NumClusters = 8;
 
+    private byte[]? byteData;
+
     private RGB HexToRGB(string color)
     {
         byte r = Convert.ToByte(color.Substring(1, 2), 16);
@@ -63,7 +45,7 @@
         return new RGB(r, g, b);
     }
 
-    private async Task CreatePalette(InputFileChangeEventArgs e)
+    private async void UploadImage(InputFileChangeEventArgs e)
     {
         int bmpHeaderSize = 54;
         int maxWidth = 640;
@@ -76,19 +58,24 @@
         using var ms = new MemoryStream();
         await input.CopyToAsync(ms);
 
-        byte[] byteData = ms.ToArray()
+        byteData = ms.ToArray()
             .Skip(bmpHeaderSize)
             .ToArray();
+
+        ImgSrc = ($"data:{e.File.ContentType};base64," + 
+            $"{Convert.ToBase64String(ms.ToArray())}");
+    }
+
+    private void CreatePalette()
+    {
+        if (byteData == null)
+            return;
 
         RGB[] RGBData = new RGB[byteData.Length / 3];
 
         for (int i = 2; i < byteData.Length; i += 3)
             RGBData[(i - 2) / 3] = new RGB(byteData[i],
                 byteData[i - 1], byteData[i - 2]);
-
-        ImgSrc = ($"data:{e.File.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}");
-        Console.WriteLine(e.File.ContentType);
-        Console.WriteLine(e.File.Size);
 
         Colors = KMeans.Cluster<RGB>(RGBData)
             .ToList();
