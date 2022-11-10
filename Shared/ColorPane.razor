@@ -1,25 +1,57 @@
-<div class="col vh-100" style="background-color:@Color;">
-    <h2>@Color</h2>
+<div class="col vh-100 d-flex justify-content-center @Display" 
+    style="flex: @Flex; transition: flex 0.5s ease-in; 
+    background-color: @Color;">
 
-    @for (int i = 0; i < 3; i++)
+    @if (Flex != "0")
     {
-        int j = i;
-        <input class="mw-20"
-            type="range" min="0" max="255" 
-            value="@RGBColor.Values[j]"
-            @oninput="@(e => OnSliderChange(e, j))" />
-        @* <input type="range" min="0" max="255" 
-            value="@RGBColor.Values[j]"
-            style="accent-color: @Accents[j]"
-            @oninput="@(e => OnSliderChange(e, j))" /> *@
-    }
+        <div class="position-absolute bottom-0 m-auto p-3">
+            @* <h2 class="text-center m-auto text-label"
+                style="color: @TextColor();">@Color</h2> *@
+        
+            <h2>
+                <input type="text" class="text-center m-auto text-label" 
+                    maxlength="7" style="color: @TextColor(); width: 8em;"
+                    value="@Color" @onchange="@OnInputTextChange" />
+            </h2>
 
-    <button onclick="@Discard"></button>
+            @for (int i = 0; i < 3; i++)
+            {
+                int j = i;
+                char component = "RGB"[j];
+                string htmlId = $"pane-{PaneId}-{component}";
+                string accentColor = "#000000";
+
+                accentColor = accentColor
+                    .Remove(j * 2 + 1, 2)
+                    .Insert(j * 2 + 1, Convert
+                        .ToInt32(RGBColor.Values[j])
+                        .ToString("X")
+                        .PadLeft(2, '0'));
+
+                <div class="d-flex justify-content-center
+                    align-items-center">
+                    <label for="@htmlId" class="align-middle p-1 text-label"
+                        style="color: @TextColor();">@component</label>
+                    <input id="@htmlId" class="mw-20"
+                        type="range" min="0" max="255" 
+                        style="accent-color: @RGBColor.Values[j]"
+                        value="@RGBColor.Values[j]"
+                        @oninput="@(e => OnSliderChange(e, j))" />
+                </div>
+            }
+
+            <button type="button" class="btn btn-primary"
+                onclick="@RemoveColorPane">
+                <i type="button" class="fa fa-trash"></i>
+            </button>
+        </div>
+    }
 </div>
+
 
 @code {
     [Parameter]
-    public int Id { get; set; }
+    public string PaneId { get; set; } = "";
 
     [Parameter] 
     public string Color { get; set; } = "#FFFFFF";
@@ -28,23 +60,76 @@
     public RGB RGBColor { get; set; } = new RGB(255, 255, 255);
 
     [Parameter]
-    public Action<int, string> UpdateColorPane { get; set; }
+    public Action<string, string> UpdateColorPane { get; set; }
     
     [Parameter]
-    public Action<int> RemoveColorPane { get; set; }
+    public Action<string> RemoveColorFromList { get; set; }
 
-    @* private string[] Accents = { "#FF0000", "#00FF00", "#0000FF" }; *@
+    // controls animation of removing a panne
+    private string Flex = "1";
+    private string Display = "d-block";
 
+    // update div background color based on new RGB values
+    // update list of colors in parent component
+    private void UpdateColor()
+    {
+        Color = RGBColor.ToString();
+        UpdateColorPane?.Invoke(PaneId, Color);
+    }
+
+    // validate input color before changing
+    private void OnInputTextChange(ChangeEventArgs e)
+    {
+        if (e.Value == null)
+            return;
+
+        string color = e.Value.ToString();
+        if (!color.StartsWith('#'))
+            color = '#' + color;
+        
+        Regex hexFormat = new Regex(@"^#[A-Fa-f0-9]{6}$");
+        if (hexFormat.IsMatch(color))
+        {
+            RGBColor = new RGB(color);
+            UpdateColor();
+        }
+    }
+
+    // update RGB components based on range slider values
     private void OnSliderChange(ChangeEventArgs e, int i)
     {
         RGBColor.Values[i] = Convert.ToDouble(e.Value);
-        Color = RGBColor.ToString();
-
-        UpdateColorPane?.Invoke(Id, Color);
+        UpdateColor();
     }
 
-    private void Discard()
+    // update RGB components based on increment / decrement buttons
+    private void IncrementValue(int i)
     {
-        RemoveColorPane?.Invoke(Id);
+        RGBColor.Values[i]++;
+        UpdateColor();
+    }
+
+    private void DecrementValue(int i)
+    {
+        RGBColor.Values[i]--;
+        UpdateColor();
+    }
+
+    // reduce thhe size of the pane using flex
+    // and then hide the display by setting the display to none
+    private async void RemoveColorPane()
+    {
+        Flex = "0";
+        await Task.Delay(500);
+
+        Display = "d-none";
+        RemoveColorFromList?.Invoke(PaneId);
+    }
+
+    // use white text if the brightness is too low
+    private string TextColor()
+    {
+        int valueSum = (int) RGBColor.Values.Sum();
+        return valueSum > (255 * 3 / 2) ? "#000000" : "#FFFFFF";
     }
 }

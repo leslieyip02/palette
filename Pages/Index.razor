@@ -12,21 +12,20 @@
 
 <div class="container-fluid vh-100">
     <div class="row">
-        @for (int i = 0; i < Colors.Count; i++)
+        @foreach (var (id, color) in Colors)
         {
-            int j = i;
-            <ColorPane Id=@j Color=@Colors[j] RGBColor=@HexToRGB(Colors[j])
+            <ColorPane PaneId=@id Color=@color RGBColor=@HexToRGB(color)
                 UpdateColorPane="@UpdateColorPane"
-                RemoveColorPane="@RemoveColorPane" />
+                RemoveColorFromList="@RemoveColorFromList" />
         }
     </div>
 </div>
 
 
 @code {
-    private List<string> Colors = Enumerable
+    private Dictionary<string, string> Colors = Enumerable
         .Repeat("#FFFFFF", 5)
-        .ToList();
+        .ToDictionary(_ => RandomId(), color => color);
 
     private string? ImgSrc;
     
@@ -36,15 +35,21 @@
 
     private byte[]? byteData;
 
-    private RGB HexToRGB(string color)
+    // creates a random id for each pane
+    private static string RandomId()
     {
-        byte r = Convert.ToByte(color.Substring(1, 2), 16);
-        byte g = Convert.ToByte(color.Substring(3, 2), 16);
-        byte b = Convert.ToByte(color.Substring(5, 2), 16);
-
-        return new RGB(r, g, b);
+        return Guid.NewGuid().ToString("N");
     }
 
+    // supply initial RGB values to color pane
+    private RGB HexToRGB(string color)
+    {
+        return new RGB(color);
+    }
+
+    // handle file input
+    // input types are limited to img only
+    // convert file to bmp and then into a byte array for processing
     private async void UploadImage(InputFileChangeEventArgs e)
     {
         int bmpHeaderSize = 54;
@@ -66,10 +71,14 @@
             $"{Convert.ToBase64String(ms.ToArray())}");
     }
 
+    // create palette using k-means clustering
     private void CreatePalette()
     {
         if (byteData == null)
             return;
+
+        // set number of colors for the palette`
+        KMeans.K = NumClusters;
 
         RGB[] RGBData = new RGB[byteData.Length / 3];
 
@@ -78,17 +87,19 @@
                 byteData[i - 1], byteData[i - 2]);
 
         Colors = KMeans.Cluster<RGB>(RGBData)
-            .ToList();
+            .ToDictionary(_ => RandomId(), color => color);
     }
 
-    public void UpdateColorPane(int id, string color)
+    // pass down methods to child color pane components
+    // to update the list of colors
+    public void UpdateColorPane(string id, string color)
     {
         Colors[id] = color;
     }
 
-    public void RemoveColorPane(int id)
+    // once pane has been hidden, reload
+    public void RemoveColorFromList(string id)
     {
-        Colors?.RemoveAt(id);
         StateHasChanged();
     }
 }

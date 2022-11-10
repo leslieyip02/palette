@@ -1,0 +1,6 @@
+.text-label {
+    transition: color 1s ease-out;
+    font-family: 'Rubik', sans-serif;
+    background-color: transparent;
+    border: none;
+}

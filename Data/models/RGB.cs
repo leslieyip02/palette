@@ -11,6 +11,16 @@ namespace Palette
         public RGB(byte r, byte g, byte b) =>
             Values = new double[]{ r, g, b };
 
+        // construct from a hexadecimal color string
+        public RGB(string hexColor)
+        {
+            int r = Convert.ToInt32(hexColor.Substring(1, 2), 16);
+            int g = Convert.ToInt32(hexColor.Substring(3, 2), 16);
+            int b = Convert.ToInt32(hexColor.Substring(5, 2), 16);
+
+            Values = new double[]{ r, g, b };
+        }
+
         public double[] Values { get; set; }
         
         public void Zero() =>
