@@ -4,6 +4,8 @@
 
 <ToolBar UploadImage="@UploadImage" 
     CreatePalette="@CreatePalette" />
+    
+<button onclick="@AddColorPane"></button>
 
 @* @if (ImgSrc != null)
 {
@@ -21,10 +23,11 @@
     </div>
 </div>
 
-
 @code {
+    private static int NumPanes = 5;
+
     private Dictionary<string, string> Colors = Enumerable
-        .Repeat("#FFFFFF", 5)
+        .Repeat("#FFFFFF", NumPanes)
         .ToDictionary(_ => RandomId(), color => color);
 
     private string? ImgSrc;
@@ -33,7 +36,7 @@
 
     private int NumClusters = 8;
 
-    private byte[]? byteData;
+    private byte[]? ByteData;
 
     // creates a random id for each pane
     private static string RandomId()
@@ -63,7 +66,7 @@
         using var ms = new MemoryStream();
         await input.CopyToAsync(ms);
 
-        byteData = ms.ToArray()
+        ByteData = ms.ToArray()
             .Skip(bmpHeaderSize)
             .ToArray();
 
@@ -74,20 +77,21 @@
     // create palette using k-means clustering
     private void CreatePalette()
     {
-        if (byteData == null)
+        if (ByteData == null)
             return;
 
         // set number of colors for the palette`
         KMeans.K = NumClusters;
 
-        RGB[] RGBData = new RGB[byteData.Length / 3];
+        RGB[] RGBData = new RGB[ByteData.Length / 3];
 
-        for (int i = 2; i < byteData.Length; i += 3)
-            RGBData[(i - 2) / 3] = new RGB(byteData[i],
-                byteData[i - 1], byteData[i - 2]);
+        for (int i = 2; i < ByteData.Length; i += 3)
+            RGBData[(i - 2) / 3] = new RGB(ByteData[i],
+                ByteData[i - 1], ByteData[i - 2]);
 
         Colors = KMeans.Cluster<RGB>(RGBData)
             .ToDictionary(_ => RandomId(), color => color);
+        NumPanes = Colors.Count;
     }
 
     // pass down methods to child color pane components
@@ -100,6 +104,17 @@
     // once pane has been hidden, reload
     public void RemoveColorFromList(string id)
     {
+        NumPanes--;
         StateHasChanged();
+    }
+
+    public void AddColorPane()
+    {
+        if (NumPanes < 8)
+        {
+            Colors[RandomId()] = "#FFFFFF";
+            NumPanes++;
+            StateHasChanged();
+        }
     }
 }

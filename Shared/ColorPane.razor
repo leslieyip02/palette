@@ -4,15 +4,12 @@
 
     @if (Flex != "0")
     {
-        <div class="position-absolute bottom-0 m-auto p-3">
-            @* <h2 class="text-center m-auto text-label"
-                style="color: @TextColor();">@Color</h2> *@
-        
-            <h2>
-                <input type="text" class="text-center m-auto text-label" 
-                    maxlength="7" style="color: @TextColor(); width: 8em;"
-                    value="@Color" @onchange="@OnInputTextChange" />
-            </h2>
+        <div class="position-absolute bottom-0 
+            d-flex flex-column m-auto p-3">
+            <input type="text" class="text-center m-auto text-label" 
+                maxlength="7" style="font-size: 2rem; max-width: 5em;
+                color: @TextColor();" value="@Color" 
+                @onchange="@OnInputTextChange" />
 
             @for (int i = 0; i < 3; i++)
             {
@@ -32,16 +29,14 @@
                     align-items-center">
                     <label for="@htmlId" class="align-middle p-1 text-label"
                         style="color: @TextColor();">@component</label>
-                    <input id="@htmlId" class="mw-20"
-                        type="range" min="0" max="255" 
-                        style="accent-color: @RGBColor.Values[j]"
-                        value="@RGBColor.Values[j]"
-                        @oninput="@(e => OnSliderChange(e, j))" />
+                    <input id="@htmlId" type="range" min="0" max="255"
+                        style="max-width: 8em; box-sizing: border-box;" 
+                        value="@RGBColor.Values[j]" @oninput="@(e => OnSliderChange(e, j))" />
                 </div>
             }
 
-            <button type="button" class="btn btn-primary"
-                onclick="@RemoveColorPane">
+            <button type="button" class="btn justify-content-center m-auto p-3 
+                text-label" style="color: @TextColor();" onclick="@RemoveColorPane">
                 <i type="button" class="fa fa-trash"></i>
             </button>
         </div>
@@ -99,19 +94,6 @@
     private void OnSliderChange(ChangeEventArgs e, int i)
     {
         RGBColor.Values[i] = Convert.ToDouble(e.Value);
-        UpdateColor();
-    }
-
-    // update RGB components based on increment / decrement buttons
-    private void IncrementValue(int i)
-    {
-        RGBColor.Values[i]++;
-        UpdateColor();
-    }
-
-    private void DecrementValue(int i)
-    {
-        RGBColor.Values[i]--;
         UpdateColor();
     }
 
