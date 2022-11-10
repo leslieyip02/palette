@@ -1,3 +1,10 @@
+/* /Shared/ColorPane.razor.rz.scp.css */
+.text-label[b-qrwgp6ij42] {
+    transition: color 1s ease-out;
+    font-family: 'Rubik', sans-serif;
+    background-color: transparent;
+    border: none;
+}
 /* /Shared/MainLayout.razor.rz.scp.css */
 .page[b-jppi9ems6p] {
     position: relative;
