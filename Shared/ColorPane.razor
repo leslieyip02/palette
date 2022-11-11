@@ -1,8 +1,8 @@
-<div class="col vh-100 d-flex justify-content-center @Display" 
-    style="flex: @Flex; transition: flex 0.5s ease-in; 
+<div class="col vh-100 d-flex justify-content-center @_display" 
+    style="flex: @_flex; transition: flex 0.5s ease-in; 
     background-color: @Color;">
 
-    @if (Flex != "0")
+    @if (_flex != "0")
     {
         <div class="position-absolute bottom-0 
             d-flex flex-column m-auto p-3">
@@ -61,8 +61,8 @@
     public Action<string> RemoveColorFromList { get; set; }
 
     // controls animation of removing a panne
-    private string Flex = "1";
-    private string Display = "d-block";
+    private string _flex = "1";
+    private string _display = "d-block";
 
     // update div background color based on new RGB values
     // update list of colors in parent component
@@ -101,10 +101,10 @@
     // and then hide the display by setting the display to none
     private async void RemoveColorPane()
     {
-        Flex = "0";
+        _flex = "0";
         await Task.Delay(500);
 
-        Display = "d-none";
+        _display = "d-none";
         RemoveColorFromList?.Invoke(PaneId);
     }
 
