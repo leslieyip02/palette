@@ -7,14 +7,14 @@
     
 <button onclick="@AddColorPane"></button>
 
-@* @if (ImgSrc != null)
+@* @if (imgSrc != null)
 {
-    <img src="@ImgSrc" />
+    <img src="@imgSrc" />
 } *@
 
 <div class="container-fluid vh-100">
     <div class="row">
-        @foreach (var (id, color) in Colors)
+        @foreach (var (id, color) in colors)
         {
             <ColorPane PaneId=@id Color=@color RGBColor=@HexToRGB(color)
                 UpdateColorPane="@UpdateColorPane"
@@ -24,19 +24,15 @@
 </div>
 
 @code {
-    private static int NumPanes = 5;
+    private static int numPanes = 5;
 
-    private Dictionary<string, string> Colors = Enumerable
-        .Repeat("#FFFFFF", NumPanes)
+    private Dictionary<string, string> colors = Enumerable
+        .Repeat("#FFFFFF", numPanes)
         .ToDictionary(_ => RandomId(), color => color);
 
-    private string? ImgSrc;
-    
-    private string Format = "RGB";
+    private string? imgSrc;
 
-    private int NumClusters = 8;
-
-    private byte[]? ByteData;
+    private byte[]? byteData;
 
     // creates a random id for each pane
     private static string RandomId()
@@ -66,54 +62,58 @@
         using var ms = new MemoryStream();
         await input.CopyToAsync(ms);
 
-        ByteData = ms.ToArray()
+        byteData = ms.ToArray()
             .Skip(bmpHeaderSize)
             .ToArray();
 
-        ImgSrc = ($"data:{e.File.ContentType};base64," + 
+        imgSrc = ($"data:{e.File.ContentType};base64," + 
             $"{Convert.ToBase64String(ms.ToArray())}");
     }
 
     // create palette using k-means clustering
     private void CreatePalette()
     {
-        if (ByteData == null)
+        // sample 1 color per 10 pixels
+        // 1 color is 3 bytes
+        int samplingRate = 3 * 10;
+
+        if (byteData == null)
             return;
 
-        // set number of colors for the palette`
-        KMeans.K = NumClusters;
+        int sampleSize = byteData.Length / samplingRate;
 
-        RGB[] RGBData = new RGB[ByteData.Length / 3];
+        RGB[] RGBData = new RGB[sampleSize];
 
-        for (int i = 2; i < ByteData.Length; i += 3)
-            RGBData[(i - 2) / 3] = new RGB(ByteData[i],
-                ByteData[i - 1], ByteData[i - 2]);
+        for (int i = 0; i < sampleSize; i++)
+            RGBData[i] = new RGB(byteData[i * samplingRate + 2],
+                byteData[i * samplingRate + 1], byteData[i * samplingRate]);
 
-        Colors = KMeans.Cluster<RGB>(RGBData)
+        colors.Clear();
+        colors = KMeans.Cluster<RGB>(RGBData)
             .ToDictionary(_ => RandomId(), color => color);
-        NumPanes = Colors.Count;
+        numPanes = colors.Count;
     }
 
     // pass down methods to child color pane components
     // to update the list of colors
     public void UpdateColorPane(string id, string color)
     {
-        Colors[id] = color;
+        colors[id] = color;
     }
 
     // once pane has been hidden, reload
     public void RemoveColorFromList(string id)
     {
-        NumPanes--;
+        numPanes--;
         StateHasChanged();
     }
 
     public void AddColorPane()
     {
-        if (NumPanes < 8)
+        if (numPanes < 8)
         {
-            Colors[RandomId()] = "#FFFFFF";
-            NumPanes++;
+            colors[RandomId()] = "#FFFFFF";
+            numPanes++;
             StateHasChanged();
         }
     }
