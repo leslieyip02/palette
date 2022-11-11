@@ -48,9 +48,8 @@ namespace Clustering
                 .ToArray();
 
         public double DistanceTo(IColor other) =>
-            Math.Sqrt(Values
-                .Zip(other.Values, (v0, v1) => Math.Pow(v0 - v1, 2))
-                .Aggregate(0.0, (acc, v2) => acc + v2));
+            Values.Zip(other.Values, (v0, v1) => Math.Pow(v0 - v1, 2))
+                .Aggregate(0.0, (acc, v2) => acc + v2);
 
         public override string ToString()
         {
