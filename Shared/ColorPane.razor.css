@@ -1,6 +1,21 @@
-.text-label {
+.dynamic-color {
     transition: color 1s ease-out;
-    font-family: 'Rubik', sans-serif;
-    background-color: transparent;
+}
+
+.resizable {
+    transition: flex 0.5s ease-in;
+}
+
+.color-text-input {
+    font-size: 2rem; 
+    max-width: 5em;
+    margin: auto;
+    text-align: center;
     border: none;
+    background-color: transparent;
+}
+
+.color-slider-input {
+    max-width: 8em;
+    box-sizing: border-box;
 }

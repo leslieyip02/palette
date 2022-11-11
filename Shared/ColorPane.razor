@@ -1,15 +1,12 @@
-<div class="col vh-100 d-flex justify-content-center @_display" 
-    style="flex: @_flex; transition: flex 0.5s ease-in; 
-    background-color: @Color;">
+<div class="col vh-100 d-flex justify-content-center resizable @_display" 
+    style="flex: @_flex; background-color: @Color;">
 
     @if (_flex != "0")
     {
-        <div class="position-absolute bottom-0 
-            d-flex flex-column m-auto p-3">
-            <input type="text" class="text-center m-auto text-label" 
-                maxlength="7" style="font-size: 2rem; max-width: 5em;
-                color: @TextColor();" value="@Color" 
-                @onchange="@OnInputTextChange" />
+        <div class="position-absolute bottom-0 d-flex flex-column m-auto p-3">
+            <input type="text" class="color-text-input dynamic-color" 
+                maxlength="7" style="color: @TextColor();" 
+                value="@Color" @onchange="@OnInputTextChange" />
 
             @for (int i = 0; i < 3; i++)
             {
@@ -25,18 +22,17 @@
                         .ToString("X")
                         .PadLeft(2, '0'));
 
-                <div class="d-flex justify-content-center
-                    align-items-center">
-                    <label for="@htmlId" class="align-middle p-1 text-label"
+                <div class="d-flex justify-content-center align-items-center">
+                    <label for="@htmlId" class="align-middle p-1 dynamic-color"
                         style="color: @TextColor();">@component</label>
                     <input id="@htmlId" type="range" min="0" max="255"
-                        style="max-width: 8em; box-sizing: border-box;" 
-                        value="@RGBColor.Values[j]" @oninput="@(e => OnSliderChange(e, j))" />
+                        class="color-slider-input" value="@RGBColor.Values[j]" 
+                        @oninput="@(e => OnSliderChange(e, j))" />
                 </div>
             }
 
-            <button type="button" class="btn justify-content-center m-auto p-3 
-                text-label" style="color: @TextColor();" onclick="@RemoveColorPane">
+            <button type="button" class="btn justify-content-center m-auto p-3 dynamic-color" 
+                style="color: @TextColor();" onclick="@RemoveColorPane">
                 <i type="button" class="fa fa-trash"></i>
             </button>
         </div>

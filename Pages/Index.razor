@@ -4,8 +4,6 @@
 
 <ToolBar UploadImage="@UploadImage" 
     CreatePalette="@CreatePalette" />
-    
-<button onclick="@AddColorPane"></button>
 
 @* @if (_imgSrc != null)
 {
@@ -13,15 +11,27 @@
 } *@
 
 <div class="container-fluid vh-100">
-    <div class="row">
+    <div class="row vh-100">
         @foreach (var (id, color) in _colors)
         {
             <ColorPane @key="@id" PaneId=@id Color=@color RGBColor=@HexToRGB(color)
                 UpdateColorPane="@UpdateColorPane"
                 RemoveColorFromList="@RemoveColorFromList" />
         }
+
+        @if (_numPanes == 0)
+        {
+            <h2 class="col text-center m-auto fade-in">hi 👋</h2>
+        }
     </div>
 </div>
+
+@if (_numPanes < 8)
+{
+    <button class="vh-100" onclick="@AddColorPane">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+}
 
 @code {
     private Dictionary<string, string> _colors = Enumerable
