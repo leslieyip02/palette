@@ -1,15 +1,46 @@
+/* /Pages/Index.razor.rz.scp.css */
+.fade-in[b-gcocawvhfh] {
+    animation: fadeInAnimation-b-gcocawvhfh ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation-b-gcocawvhfh {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 /* /Shared/ColorPane.razor.rz.scp.css */
-.text-label[b-qrwgp6ij42] {
+.dynamic-color[b-qrwgp6ij42] {
     transition: color 1s ease-out;
-    font-family: 'Rubik', sans-serif;
-    background-color: transparent;
+}
+
+.resizable[b-qrwgp6ij42] {
+    transition: flex 0.5s ease-in;
+}
+
+.color-text-input[b-qrwgp6ij42] {
+    font-size: 2rem; 
+    max-width: 5em;
+    margin: auto;
+    text-align: center;
     border: none;
+    background-color: transparent;
+}
+
+.color-slider-input[b-qrwgp6ij42] {
+    max-width: 8em;
+    box-sizing: border-box;
 }
 /* /Shared/MainLayout.razor.rz.scp.css */
 .page[b-jppi9ems6p] {
     position: relative;
     display: flex;
     flex-direction: column;
+    font-family: 'Rubik', sans-serif;
 }
 
 main[b-jppi9ems6p] {
