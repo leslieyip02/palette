@@ -1,3 +1,13 @@
+.panes {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.add-btn {
+    height: 100vh;
+}
+
 .fade-in {
     animation: fadeInAnimation ease 2s;
     animation-iteration-count: 1;
@@ -7,4 +17,14 @@
 @keyframes fadeInAnimation {
     0% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+@media (max-width: 640.98px) {
+    .panes {
+        flex-direction: column;
+    }
+
+    .add-btn {
+        display: none;
+    }
 }

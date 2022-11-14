@@ -23,10 +23,17 @@
 }
 
 .label {
-    overflow: hidden;
+    overflow: auto;
     white-space: nowrap;
 }
 
 .dropdown {
     width: 30%;
+}
+
+@media (max-width: 640.98px) {
+    .uncollapsed {
+        min-width: 100vw;
+        height: auto;
+    }
 }

@@ -1,11 +1,11 @@
 @inject IJSRuntime JSRuntime
 
-<div class="vh-100 d-flex justify-content-center resizable @_display" 
+<div class="d-flex justify-content-center pane @_display" 
     style="flex: @_flex; background-color: @Color;">
 
     @if (_flex != "0")
     {
-        <div class="position-absolute bottom-0 d-flex flex-column m-auto p-3">
+        <div class="pane-info m-auto p-3">
             <input type="text" class="color-text-input dynamic-color" 
                 maxlength="7" style="color: @TextColor();" 
                 value="@Color" @onchange="@OnInputTextChange" />
@@ -25,7 +25,7 @@
                         .PadLeft(2, '0'));
 
                 <div class="d-flex justify-content-center align-items-center">
-                    <label for="@htmlId" class="align-middle p-1 dynamic-color"
+                    <label for="@htmlId" class="align-middle dynamic-color p-1"
                         style="color: @TextColor();">@component</label>
                     <input id="@htmlId" type="range" min="0" max="255"
                         class="color-slider-input" value="@RGBColor.Values[j]" 
@@ -34,7 +34,7 @@
                 </div>
             }
 
-            <div class="justify-content-center m-auto p-1 dynamic-color">
+            <div class="justify-content-center dynamic-color m-auto p-1">
                 <button type="button" class="btn" style="color: @TextColor();"
                     onclick="@CopyToClipboard" title="Copy to clipboard">
                     <i type="button" class="fa fa-copy"></i>
@@ -48,7 +48,6 @@
         </div>
     }
 </div>
-
 
 @code {
     [Parameter]

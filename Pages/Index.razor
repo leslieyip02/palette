@@ -5,7 +5,7 @@
 <ToolBar UploadImage="@UploadImage" ImgSrc="@_imgSrc"
     CreatePalette="@CreatePalette" />
 
-<div class="container-fluid d-flex vh-100 p-0">
+<div class="container-fluid panes p-0">
     @foreach (var (id, color) in _colors)
     {
         <ColorPane @key="@id" PaneId=@id Color=@color 
@@ -16,13 +16,13 @@
 
     @if (_numPanes == 0)
     {
-        <h2 class="col text-center m-auto fade-in">hi 👋</h2>
+        <h2 class="col text-center fade-in m-auto">hi 👋</h2>
     }
 </div>
 
 @if (_numPanes < 8)
 {
-    <button type="btn" class="btn-dark vh-100" 
+    <button type="btn" class="btn-dark add-btn"
         onclick="@AddColorPane">
         <i class="fa fa-plus"></i>
     </button>
