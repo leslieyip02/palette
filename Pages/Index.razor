@@ -2,7 +2,7 @@
 
 <PageTitle>Index</PageTitle>
 
-<ToolBar UploadImage="@UploadImage" 
+<ToolBar UploadImage="@UploadImage"
     CreatePalette="@CreatePalette" />
 
 @* @if (_imgSrc != null)
@@ -79,7 +79,7 @@
     }
 
     // create palette using k-means clustering
-    private void CreatePalette()
+    private void CreatePalette(int numClusters, string format)
     {
         // sample 1 color per 10 pixels
         // 1 color is 3 bytes
@@ -88,18 +88,69 @@
         if (_byteData == null)
             return;
 
+        _colors.Clear();
+        ProcessImage(samplingRate, numClusters, format);
+        _numPanes = _colors.Count;
+        StateHasChanged();
+    }
+
+    // make palette based on the format
+    private void ProcessImage(int samplingRate, 
+        int numClusters, string format)
+    {
         int sampleSize = _byteData.Length / samplingRate;
 
-        RGB[] RGBData = new RGB[sampleSize];
+        KMeans.K = numClusters;
 
-        for (int i = 0; i < sampleSize; i++)
-            RGBData[i] = new RGB(_byteData[i * samplingRate + 2],
-                _byteData[i * samplingRate + 1], _byteData[i * samplingRate]);
+        switch (format)
+        {
+            case "RGB":
+                RGB[] RGBData = new RGB[sampleSize];
+                for (int i = 0; i < sampleSize; i++)
+                    RGBData[i] = new RGB(_byteData[i * samplingRate + 2],
+                        _byteData[i * samplingRate + 1], _byteData[i * samplingRate]);
 
-        _colors.Clear();
-        _colors = KMeans.Cluster<RGB>(RGBData)
-            .ToDictionary(_ => RandomId(), color => color);
-        _numPanes = _colors.Count;
+                _colors = KMeans.Cluster<RGB>(RGBData)
+                    .ToDictionary(_ => RandomId(), color => color);
+                
+                break;
+
+            case "CMYK":
+                CMYK[] CMYKData = new CMYK[sampleSize];
+                for (int i = 0; i < sampleSize; i++)
+                    CMYKData[i] = new CMYK(_byteData[i * samplingRate + 2],
+                        _byteData[i * samplingRate + 1], _byteData[i * samplingRate]);
+
+                _colors = KMeans.Cluster<CMYK>(CMYKData)
+                    .ToDictionary(_ => RandomId(), color => color);
+                
+                break;
+
+            case "HSL":
+                HSL[] HSLData = new HSL[sampleSize];
+                for (int i = 0; i < sampleSize; i++)
+                    HSLData[i] = new HSL(_byteData[i * samplingRate + 2],
+                        _byteData[i * samplingRate + 1], _byteData[i * samplingRate]);
+
+                _colors = KMeans.Cluster<HSL>(HSLData)
+                    .ToDictionary(_ => RandomId(), color => color);
+                
+                break;
+
+            case "HSV":
+                HSV[] HSVData = new HSV[sampleSize];
+                for (int i = 0; i < sampleSize; i++)
+                    HSVData[i] = new HSV(_byteData[i * samplingRate + 2],
+                        _byteData[i * samplingRate + 1], _byteData[i * samplingRate]);
+
+                _colors = KMeans.Cluster<HSV>(HSVData)
+                    .ToDictionary(_ => RandomId(), color => color);
+                
+                break;
+
+            default:
+                throw new Exception("Invalid color format");
+        }
     }
 
     // pass down methods to child color pane components

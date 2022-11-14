@@ -10,7 +10,7 @@ namespace Palette
     public static class KMeans
     {
         // number of clusters
-        public static int K { get; set; } = 8;
+        public static int K { get; set; } = 5;
 
         // stop after a certain number of iterations
         // since the result is probably good enough

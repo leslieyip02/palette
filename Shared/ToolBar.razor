@@ -4,29 +4,36 @@
     @if (!_isCollapsed)
     {
         <InputFile accept="image/*" OnChange="@UploadImage" />
-        <button onclick="@CreatePalette"></button>
+        <button onclick="@(() => 
+            CreatePalette(@_numClusters, @_format))"></button>
 
-        
-        @* <label for="colorFormat">Choose a Format:</label>
-        <select @bind="@Format">
+        <label for="numClusters">Number of colors (≤ 8):</label>
+        <input type="number" min="1" max="8"
+            @bind="_numClusters"> 
+
+        <label for="format">Choose a Format:</label>
+        <select @bind="_format">
             <option value="RGB" selected>RGB</option>
             <option value="CMYK">CMYK</option>
             <option value="HSL">HSL</option>
             <option value="HSV">HSV</option>
-        </select> *@
+        </select>
     }
 </div>
 
 @code {
     [Parameter]
     public Action<InputFileChangeEventArgs> UploadImage { get; set; }
-
+    
     [Parameter]
-    public Action CreatePalette { get; set; }
+    public Action<int, string> CreatePalette { get; set; }
 
+    // controls display of the bar
     private bool _isCollapsed = true;
-
     private string _display = "";
+
+    private int _numClusters = 5;
+    private string _format = "RGB";
 
     private void ToggleCollapse()
     {
