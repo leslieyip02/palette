@@ -1,7 +1,7 @@
-<div class="fixed-top @ToggledClasses()">
-    <span class="oi oi-align-left" onclick="@ToggleCollapse"></span>
+<div class="fixed-top @_display">
+    <i class="fa fa-bars fa-3x" onclick="@ToggleCollapse"></i>
 
-    @if (!IsCollapsed)
+    @if (!_isCollapsed)
     {
         <InputFile accept="image/*" OnChange="@UploadImage" />
         <button onclick="@CreatePalette"></button>
@@ -24,16 +24,14 @@
     [Parameter]
     public Action CreatePalette { get; set; }
 
-    private bool IsCollapsed = true;
+    private bool _isCollapsed = true;
+
+    private string _display = "";
 
     private void ToggleCollapse()
     {
-        IsCollapsed = !IsCollapsed;
-    }
-
-    private string ToggledClasses()
-    {
-        return IsCollapsed ? "" :
-            "w-25 vh-100 bg-primary";
+        _isCollapsed = !_isCollapsed;
+        _display = (_display.Length > 0) ? "" :
+            "w-25 vh-100 bg-primary" ;
     }
 }

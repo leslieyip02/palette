@@ -1,4 +1,6 @@
-<div class="col vh-100 d-flex justify-content-center resizable @_display" 
+@inject IJSRuntime JSRuntime
+
+<div class="vh-100 d-flex justify-content-center resizable @_display" 
     style="flex: @_flex; background-color: @Color;">
 
     @if (_flex != "0")
@@ -27,14 +29,22 @@
                         style="color: @TextColor();">@component</label>
                     <input id="@htmlId" type="range" min="0" max="255"
                         class="color-slider-input" value="@RGBColor.Values[j]" 
-                        @oninput="@(e => OnSliderChange(e, j))" />
+                        @oninput="@(e => OnSliderChange(e, j))" 
+                        title="@RGBColor.Values[j]"/>
                 </div>
             }
 
-            <button type="button" class="btn justify-content-center m-auto p-3 dynamic-color" 
-                style="color: @TextColor();" onclick="@RemoveColorPane">
-                <i type="button" class="fa fa-trash"></i>
-            </button>
+            <div class="justify-content-center m-auto p-1 dynamic-color">
+                <button type="button" class="btn" style="color: @TextColor();"
+                    onclick="@CopyToClipboard" title="Copy to clipboard">
+                    <i type="button" class="fa fa-copy"></i>
+                </button>
+
+                <button type="button" class="btn" style="color: @TextColor();"
+                    onclick="@RemoveColorPane" title="Remove color">
+                    <i type="button" class="fa fa-trash"></i>
+                </button>
+            </div>
         </div>
     }
 </div>
@@ -93,7 +103,13 @@
         UpdateColor();
     }
 
-    // reduce thhe size of the pane using flex
+    private async Task CopyToClipboard()
+    {
+        await JSRuntime
+            .InvokeVoidAsync("navigator.clipboard.writeText", Color);
+    }
+
+    // reduce the size of the pane using flex
     // and then hide the display by setting the display to none
     private async void RemoveColorPane()
     {
