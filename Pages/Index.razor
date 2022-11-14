@@ -2,18 +2,14 @@
 
 <PageTitle>Index</PageTitle>
 
-<ToolBar UploadImage="@UploadImage"
+<ToolBar UploadImage="@UploadImage" ImgSrc="@_imgSrc"
     CreatePalette="@CreatePalette" />
-
-@* @if (_imgSrc != null)
-{
-    <img src="@_imgSrc" />
-} *@
 
 <div class="container-fluid d-flex vh-100 p-0">
     @foreach (var (id, color) in _colors)
     {
-        <ColorPane @key="@id" PaneId=@id Color=@color RGBColor=@HexToRGB(color)
+        <ColorPane @key="@id" PaneId=@id Color=@color 
+            RGBColor=@HexToRGB(color)
             UpdateColorPane="@UpdateColorPane"
             RemoveColorFromList="@RemoveColorFromList" />
     }
@@ -26,7 +22,8 @@
 
 @if (_numPanes < 8)
 {
-    <button class="vh-100" onclick="@AddColorPane">
+    <button type="btn" class="btn-dark vh-100" 
+        onclick="@AddColorPane">
         <i class="fa fa-plus"></i>
     </button>
 }
@@ -76,6 +73,7 @@
 
         _imgSrc = ($"data:{e.File.ContentType};base64," + 
             $"{Convert.ToBase64String(ms.ToArray())}");
+        StateHasChanged();
     }
 
     // create palette using k-means clustering
