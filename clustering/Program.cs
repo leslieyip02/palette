@@ -22,17 +22,17 @@ namespace Clustering
             }
         }
 
-        public static void CreatePalette<T>(T[] data) 
+        public static void CreatePalette<T>(T[] data)
             where T : IColor, new()
         {
             string[] centroids = KMeans.Cluster<T>(data);
-            Console.WriteLine("Palette: " + 
+            Console.WriteLine("Palette: " +
                 String.Join("   ", centroids));
         }
 
         public static void Main(string[] args)
         {
-            string[] imgNames = { "city.jpg", "city2.jpg", "desert.png",
+            string[] imgNames = { "city1.jpg", "city2.jpg", "desert.png",
                 "mountains1.jpg", "mountains2.jpg", "ocean.jpg",
                 "scenery1.jpg", "scenery2.jpg", "ui.png", "winter.jpg" };
 
@@ -47,13 +47,36 @@ namespace Clustering
             Console.WriteLine("- 8 : scenery2");
             Console.WriteLine("- 9 : ui");
             Console.WriteLine("- 10: winter");
+            Console.WriteLine("- 11: custom");
 
             int n = Convert.ToInt32(Console.ReadLine());
-            string path = "..\\..\\..\\img\\" + imgNames[n - 1];
-            Image img = Image.FromFile(path);
-            byte[] byteData = ImageToByteArray(img)
-                .Skip(BMP_HEADER_SIZE)
-                .ToArray();
+            if (n == 11)
+            {
+                Console.WriteLine("Name of image (in the img folder): ");
+            }
+            string imgName = n == 11
+                ? Console.ReadLine().Trim()
+                : imgNames[n - 1];
+            string path = "..\\..\\..\\img\\" + imgName;
+            byte[] byteData;
+            try
+            {
+                Image img = Image.FromFile(path);
+                byteData = ImageToByteArray(img)
+                    .Skip(BMP_HEADER_SIZE)
+                    .ToArray();
+            }
+            catch (System.IO.FileNotFoundException _)
+            {
+                Console.WriteLine("{0} not found.", path);
+                return;
+            }
+
+            if (byteData == null)
+            {
+                Console.WriteLine("Could not load image.");
+                return;
+            }
 
             Console.WriteLine("Choose a format: ");
             Console.WriteLine("- 1: RGB");
