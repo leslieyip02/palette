@@ -34,18 +34,20 @@ namespace Clustering
         public static string[] Cluster<T>(T[] data) 
             where T : IColor, new()
         {
-            Clusters = new int[data.Length];
-            RandomiseClusters(data.Length);
+            KMeans.Clusters = new int[data.Length];
+            KMeans.RandomiseClusters(data.Length);
             
             // average values of each cluster
             T[] means = new T[K];
             for (int i = 0; i < K; i++)
+            {
                 means[i] = new T();
+            }
             
-            CentroidIds = new int[K];
+            KMeans.CentroidIds = new int[K];
             
-            UpdateMeans(data, ref means);
-            UpdateCentroids(data, means);
+            KMeans.UpdateMeans(data, ref means);
+            KMeans.UpdateCentroids(data, means);
             
             // Console.WriteLine(String.Join(", ", Means));
             // Console.WriteLine(String.Join(", ", CentroidIds));
@@ -54,16 +56,18 @@ namespace Clustering
             int iterations = 0;
             while (changed && iterations < MaxIterations)
             {
-                changed = AssignClusters(data);
-                UpdateMeans(data, ref means);
-                UpdateCentroids(data, means);
+                changed = KMeans.AssignClusters(data);
+                KMeans.UpdateMeans(data, ref means);
+                KMeans.UpdateCentroids(data, means);
 
                 iterations++;
             }
 
             string[] centroids = new string[K];
             for (int i = 0; i < K; i++)
-                centroids[i] = data[CentroidIds[i]].ToString();
+            {
+                centroids[i] = data[KMeans.CentroidIds[i]].ToString();
+            }
 
             return centroids;
         }
@@ -73,8 +77,8 @@ namespace Clustering
         {
             Random rnd = new Random();
 
-            Parallel.For(0, Clusters.Length, i => {
-                Clusters[i] = rnd.Next(K);
+            Parallel.For(0, KMeans.Clusters.Length, i => {
+                KMeans.Clusters[i] = rnd.Next(K);
             });
         }
 
@@ -85,18 +89,22 @@ namespace Clustering
             where T : IColor
         {
             for (int i = 0; i < means.Length; i++)
-                means[i].Zero();
-
-            int[] counts = new int[Clusters.Length];
-            for (int i = 0; i < Clusters.Length; i++)
             {
-                int cluster = Clusters[i];
+                means[i].Zero();
+            }
+
+            int[] counts = new int[KMeans.Clusters.Length];
+            for (int i = 0; i < KMeans.Clusters.Length; i++)
+            {
+                int cluster = KMeans.Clusters[i];
                 counts[cluster]++;
                 means[cluster].AddBy(data[i]);
             }
 
             for (int i = 0; i < means.Length; i++)
+            {
                 means[i].DivideBy(counts[i]);
+            }
         }
 
         // for each cluster, find the data point that is
@@ -109,13 +117,13 @@ namespace Clustering
             Array.Fill(closestDistances, double.MaxValue);
 
             Parallel.For(0, data.Length, i => {
-                int cluster = Clusters[i];
+                int cluster = KMeans.Clusters[i];
                 double d = data[i].DistanceTo(means[cluster]);
 
                 if (d < closestDistances[cluster])
                 {
                     closestDistances[cluster] = d;
-                    CentroidIds[cluster] = i;
+                    KMeans.CentroidIds[cluster] = i;
                 }
             });
         }
@@ -129,16 +137,18 @@ namespace Clustering
             bool changed = false;
 
             Parallel.For(0, data.Length, i => {
-                int closestIndex = Clusters[i];
+                int closestIndex = KMeans.Clusters[i];
                 double closestDistance = data[i]
-                    .DistanceTo(data[CentroidIds[closestIndex]]);
+                    .DistanceTo(data[KMeans.CentroidIds[closestIndex]]);
 
-                for (int j = 0; j < CentroidIds.Length; j++)
+                for (int j = 0; j < KMeans.CentroidIds.Length; j++)
                 {
                     if (j == Clusters[i])
+                    {
                         continue;
+                    }
 
-                    double d = data[i].DistanceTo(data[CentroidIds[j]]);
+                    double d = data[i].DistanceTo(data[KMeans.CentroidIds[j]]);
 
                     // reassign if there is a closer centroid                    
                     if (d < closestDistance)
@@ -149,7 +159,7 @@ namespace Clustering
                     }
                 }
 
-                Clusters[i] = closestIndex;
+                KMeans.Clusters[i] = closestIndex;
             });
 
             return changed;

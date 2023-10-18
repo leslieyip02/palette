@@ -8,20 +8,22 @@ namespace Clustering
 {
     public struct HSL : IColor
     {
-        public HSL() =>
-            Values = new double[]{ 0.0, 0.0, 0.0 };
+        public HSL()
+        {
+            this.Values = new double[] { 0.0, 0.0, 0.0 };
+        }
 
         public HSL(byte r, byte g, byte b)
         {
             // find reciprocals of RGB values
-            double[] reciprocals = new double[]{ r / 255.0,
+            double[] reciprocals = new double[] { r / 255.0,
                 g / 255.0, b / 255.0 };
 
             // edge case when all RGB values are the same
             if (reciprocals[0] == reciprocals[1] &&
                 reciprocals[1] == reciprocals[2])
             {
-                Values = new double[]{ 0.0, 0.0, reciprocals[0] };
+                this.Values = new double[] { 0.0, 0.0, reciprocals[0] };
                 return;
             }
 
@@ -31,10 +33,14 @@ namespace Clustering
             for (int i = 1; i < 3; i++)
             {
                 if (reciprocals[i] > reciprocals[cMaxIndex])
+                {
                     cMaxIndex = i;
+                }
 
                 if (reciprocals[i] < reciprocals[cMinIndex])
+                {
                     cMinIndex = i;
+                }
             }
 
             double d = reciprocals[cMaxIndex] - reciprocals[cMinIndex];
@@ -64,38 +70,46 @@ namespace Clustering
             double l = (reciprocals[cMaxIndex] + reciprocals[cMinIndex]) * 0.5;
             double s = d / (1 - Math.Abs(2 * l - 1));
 
-            Values = new double[]{ h, s, l };
+            this.Values = new double[]{ h, s, l };
         }
 
         public double[] Values { get; set; }
         
-        public void Zero() =>
-            Values = Values.Select(v => 0.0)
+        public void Zero()
+        {
+            this.Values = this.Values.Select(v => 0.0)
                 .ToArray();
+        }
 
-        public void AddBy(IColor other) =>
-            Values = Values.Zip(other.Values, (v0, v1) => v0 + v1)
+        public void AddBy(IColor other)
+        {
+            this.Values = this.Values.Zip(other.Values, (v0, v1) => v0 + v1)
                 .ToArray();
+        }
 
-        public void DivideBy(int n) =>
-            Values = Values.Select(v => v / n)
+        public void DivideBy(int n)
+        {
+            this.Values = this.Values.Select(v => v / n)
                 .ToArray();
+        }
 
-        public double DistanceTo(IColor other) =>
-            Values.Zip(other.Values, (v0, v1) => Math.Pow(v0 - v1, 2))
+        public double DistanceTo(IColor other)
+        {
+            return this.Values.Zip(other.Values, (v0, v1) => Math.Pow(v0 - v1, 2))
                 .Aggregate(0.0, (acc, v2) => acc + v2);
+        }
 
         public override string ToString()
         {
-            double c = (1 - Math.Abs(2 * Values[2] - 1)) * Values[1];
-            double x = (1 - Math.Abs((Values[0] / 60) % 2 - 1)) * c;
-            double m = Values[2] - c / 2;
+            double c = (1 - Math.Abs(2 * this.Values[2] - 1)) * this.Values[1];
+            double x = (1 - Math.Abs((this.Values[0] / 60) % 2 - 1)) * c;
+            double m = this.Values[2] - c / 2;
 
             double[] reciprocals;
-            switch (Values[0])
+            switch (this.Values[0])
             {
                 case >= 0 and < 60:
-                    reciprocals = new double[]{ c, x, 0.0 };
+                    reciprocals = new double[] { c, x, 0.0 };
                     break;
                 
                 case >= 60 and < 120:
@@ -103,19 +117,19 @@ namespace Clustering
                     break;
 
                 case >= 120 and < 180:
-                    reciprocals = new double[]{ 0.0, c, x };
+                    reciprocals = new double[] { 0.0, c, x };
                     break;
 
                 case >= 180 and < 240:
-                    reciprocals = new double[]{ 0.0, x, c };
+                    reciprocals = new double[] { 0.0, x, c };
                     break;
 
                 case >= 240 and < 300:
-                    reciprocals = new double[]{ x, 0.0, c };
+                    reciprocals = new double[] { x, 0.0, c };
                     break;
 
                 case >= 300 and < 360:
-                    reciprocals = new double[]{ c, 0.0, x };
+                    reciprocals = new double[] { c, 0.0, x };
                     break;
 
                 default:
